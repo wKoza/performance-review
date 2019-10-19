@@ -1,4 +1,11 @@
 {
+  "extends": [
+    "tslint:recommended",
+    "tslint-eslint-rules",
+    "tslint-config-prettier",
+    "tslint-jasmine-rules",
+    "tslint-origin-ordered-imports-rule"
+  ],
   "rulesDirectory": [
     "node_modules/@nrwl/workspace/src/tslint",
     "node_modules/codelyzer"
@@ -11,30 +18,42 @@
       "severity": "warn"
     },
     "forin": true,
-    "import-blacklist": [true, "rxjs/Rx"],
+    "import-blacklist": [
+      true,
+      "rxjs/Rx"
+    ],
     "interface-over-type-literal": true,
-    "member-access": false,
     "member-ordering": [
       true,
       {
-        "order": [
-          "static-field",
-          "instance-field",
-          "static-method",
-          "instance-method"
-        ]
+        "order": "instance-sandwich"
       }
+    ],
+    "no-focused-tests": true,
+    "array-bracket-spacing": [
+      true,
+      "never"
     ],
     "no-arg": true,
     "no-bitwise": true,
-    "no-console": [true, "debug", "info", "time", "timeEnd", "trace"],
+    "no-console": [
+      true,
+      "debug",
+      "info",
+      "time",
+      "timeEnd",
+      "trace"
+    ],
     "no-construct": true,
     "no-debugger": true,
     "no-duplicate-super": true,
     "no-empty": false,
     "no-empty-interface": true,
     "no-eval": true,
-    "no-inferrable-types": [true, "ignore-params"],
+    "no-inferrable-types": [
+      false,
+      "ignore-params"
+    ],
     "no-misused-new": true,
     "no-non-null-assertion": true,
     "no-shadowed-variable": true,
@@ -45,11 +64,20 @@
     "no-unused-expression": true,
     "no-var-keyword": true,
     "object-literal-sort-keys": false,
+    "object-curly-spacing": [
+      true,
+      "always"
+    ],
     "prefer-const": true,
     "radix": true,
-    "triple-equals": [true, "allow-null-check"],
+    "max-classes-per-file": false,
+    "triple-equals": [
+      true,
+      "allow-null-check"
+    ],
     "unified-signatures": true,
-    "variable-name": false,
+    "component-class-suffix": true,
+    "directive-class-suffix": true,
     "nx-enforce-module-boundaries": [
       true,
       {
@@ -57,15 +85,17 @@
         "depConstraints": [
           {
             "sourceTag": "*",
-            "onlyDependOnLibsWithTags": ["*"]
+            "onlyDependOnLibsWithTags": [
+              "*"
+            ]
           }
         ]
       }
     ],
-    "directive-selector": [true, "attribute", "app", "camelCase"],
-    "component-selector": [true, "element", "app", "kebab-case"],
+    "import-destructuring-spacing": true,
     "no-conflicting-lifecycle": true,
     "no-host-metadata-property": true,
+    "no-forward-ref": true,
     "no-input-rename": true,
     "no-inputs-metadata-property": true,
     "no-output-native": true,
@@ -75,6 +105,39 @@
     "template-banana-in-box": true,
     "template-no-negated-async": true,
     "use-lifecycle-interface": true,
-    "use-pipe-transform-interface": true
+    "use-pipe-transform-interface": true,
+    "jsdoc-format": false,
+    "one-line": [
+      true,
+      "check-open-brace"
+    ],
+    "align": false,
+    "interface-name": false,
+    "no-conditional-assignment": true,
+    "only-arrow-functions": [
+      true,
+      "allow-named-functions"
+    ],
+    "prefer-for-of": true,
+    "prefer-object-spread": true,
+    "quotemark": [
+      true,
+      "single",
+      "avoid-escape"
+    ],
+    "trailing-comma": [
+      false,
+      {
+        "multiline": "always",
+        "singleline": "never"
+      }
+    ],
+    "variable-name": [
+      true,
+      "allow-leading-underscore",
+      "allow-pascal-case",
+      "ban-keywords",
+      "check-format"
+    ]
   }
 }
