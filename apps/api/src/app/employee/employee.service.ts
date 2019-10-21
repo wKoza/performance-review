@@ -1,5 +1,6 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
-import { Employee, Roles } from '@perf-review/api-interfaces';
+import { Employee, Review, ReviewStatuses, Roles } from '@perf-review/api-interfaces';
+import { ReviewService } from '../review/review.service';
 import { EmployeeDTO } from './employee.dto';
 
 @Injectable()
@@ -19,6 +20,8 @@ export class EmployeeService {
   };
   private _employees: Employee[] = [this._admin1, this._employee1];
   private _currId = 3;
+
+  constructor(private reviewService: ReviewService) {}
 
   async returnAllEmployees(): Promise<any> {
     const method = this.className + '.returnAllEmployees';
@@ -41,15 +44,14 @@ export class EmployeeService {
     return employee;
   }
 
-  async createEmployee(employee: EmployeeDTO): Promise<any> {
-    this.validateEmployee(employee);
+  async createEmployee(newEmployee: Employee): Promise<Employee> {
+    this.validateEmployee(newEmployee);
 
     const method = this.className + '.createEmployee';
     console.log(
-      method + ' attempting to create the following employee: ' + JSON.stringify(employee)
+      method + ' attempting to create the following employee: ' + JSON.stringify(newEmployee)
     );
 
-    const newEmployee: Employee = employee;
     newEmployee.id = this._currId;
     this._employees.push(newEmployee);
 
@@ -61,7 +63,47 @@ export class EmployeeService {
     return newEmployee;
   }
 
-  async updateEmployee(id: number, employee: EmployeeDTO): Promise<any> {
+  async assignReviewers(revieweeId: number, reviewerIds: number[]): Promise<Review[]> {
+    this.validateId(revieweeId);
+    if (!reviewerIds) {
+      // no reviewerIds were provided
+      return;
+    }
+    reviewerIds.forEach((id) => {
+      this.validateId(id);
+    });
+
+    const method = this.className + '.assignReviewers';
+    console.log(method + ' revieweeId: ' + revieweeId);
+    console.log(method + ' reviewerIds: ' + JSON.stringify(reviewerIds));
+    const reviews: Review[] = [];
+
+    reviewerIds.forEach(async (reviewerId) => {
+      const idx = this._employees.findIndex((employee: Employee) => {
+        return employee.id === reviewerId;
+      });
+
+      if (idx < 0) {
+        throw new NotFoundException('Could not find employee with the following id: ' + reviewerId);
+      }
+
+      let review: Review = {
+        id: null,
+        revieweeId: revieweeId,
+        reviewerId: reviewerId,
+        dateRequested: new Date(),
+        dateSubmitted: null,
+        reviewStatus: ReviewStatuses.pending,
+        review: null
+      };
+
+      review = await this.reviewService.createReview(review);
+      reviews.push(review);
+    });
+    return reviews;
+  }
+
+  async updateEmployee(id: number, employee: EmployeeDTO): Promise<Employee> {
     this.validateId(id);
     this.validateEmployee(employee);
 
@@ -101,8 +143,8 @@ export class EmployeeService {
   }
 
   private validateId(id: number) {
-    if (!id || id < 0) {
-      throw new BadRequestException('invalid id was passed in');
+    if (!id || id < 0 || typeof id !== 'number') {
+      throw new BadRequestException('invalid employee id was passed in');
     }
   }
 
