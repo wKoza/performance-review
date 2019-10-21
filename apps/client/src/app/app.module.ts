@@ -3,10 +3,12 @@ import { NgModule } from '@angular/core';
 
 import { AppComponent } from './app.component';
 import { HttpClientModule } from '@angular/common/http';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { LandingComponent } from './landing/landing.component';
 
 @NgModule({
-  declarations: [AppComponent],
-  imports: [BrowserModule, HttpClientModule],
+  declarations: [AppComponent, LandingComponent],
+  imports: [BrowserModule, HttpClientModule, BrowserAnimationsModule],
   providers: [],
   bootstrap: [AppComponent]
 })
