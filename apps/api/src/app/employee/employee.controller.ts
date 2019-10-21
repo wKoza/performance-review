@@ -1,5 +1,5 @@
 import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Put } from '@nestjs/common';
-import { Employee } from '@perf-review/api-interfaces';
+import { Employee, Review } from '@perf-review/api-interfaces';
 import { EmployeeDTO } from './employee.dto';
 import { EmployeeService } from './employee.service';
 
@@ -34,7 +34,7 @@ export class EmployeeController {
   assignForPerfReviews(
     @Param('revieweeId', new ParseIntPipe()) revieweeId: number,
     @Body() reviewerIds: number[]
-  ) {
+  ): Promise<Review[]> {
     return this.employeeService.assignReviewers(revieweeId, reviewerIds);
   }
 

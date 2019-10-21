@@ -42,7 +42,6 @@ export class ReviewService {
     }
 
     console.log(method + ' returning the following reviews: ' + JSON.stringify(reviews));
-
     return reviews;
   }
 
@@ -137,6 +136,9 @@ export class ReviewService {
   private validateReview(review: Review) {
     if (!review) {
       throw new BadRequestException('invalid review was passed in: ' + JSON.stringify(review));
+    }
+    if (review.reviewerId === review.revieweeId) {
+      throw new BadRequestException('reviewer ID cannot be the same as reviewee ID');
     }
   }
 }
