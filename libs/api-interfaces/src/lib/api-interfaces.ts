@@ -33,3 +33,11 @@ export enum ReviewSource {
   reviewId = 'reviewId',
   revieweeId = 'revieweeId'
 }
+
+// TODO: Move this dialog data to its own library, since it's only used in frontend
+export interface DialogData {
+  title?: string;
+  content?: string;
+  noBtnTitle?: string;
+  yesBtnTitle?: string;
+}

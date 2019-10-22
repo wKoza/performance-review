@@ -8,6 +8,9 @@ import { RouterModule, Routes } from '@angular/router';
 import { DashboardComponent } from './admin/dashboard/dashboard.component';
 import { AppComponent } from './app.component';
 import { LandingComponent } from './landing/landing.component';
+import { KeyValuePipe } from './shared/pipes/key-value.pipe';
+import { MatDialogModule } from '@angular/material/dialog';
+import { DialogComponent } from './shared/components/dialog/dialog.component';
 
 const appRoutes: Routes = [
   { path: 'landing-page', component: LandingComponent },
@@ -17,10 +20,11 @@ const appRoutes: Routes = [
 ];
 
 @NgModule({
-  declarations: [AppComponent, LandingComponent, DashboardComponent],
+  declarations: [AppComponent, LandingComponent, DashboardComponent, DialogComponent, KeyValuePipe],
   imports: [
     BrowserModule,
     MatButtonModule,
+    MatDialogModule,
     MatTableModule,
     HttpClientModule,
     BrowserAnimationsModule,
