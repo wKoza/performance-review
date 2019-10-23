@@ -3,7 +3,7 @@
 ### Running application
 - clone project
 - install all dependencies 
-- run following command 'npm run start' or view the project live in the following link
+- run following command 'npm run start'
 
 ### Overview
 
