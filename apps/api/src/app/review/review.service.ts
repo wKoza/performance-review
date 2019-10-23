@@ -1,8 +1,11 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException, OnModuleInit } from '@nestjs/common';
+import { ModuleRef } from '@nestjs/core';
 import { Review, ReviewSource } from '@perf-review/api-interfaces';
+import { EmployeeService } from './../employee/employee.service';
 
 @Injectable()
-export class ReviewService {
+export class ReviewService implements OnModuleInit {
+  private employeeService: EmployeeService;
   private className = 'ReviewService'; // used just for logging purposes
   private _review1: Review = {
     id: 1,
@@ -13,8 +16,23 @@ export class ReviewService {
     reviewStatus: 1,
     review: null
   };
-  private _reviews: Review[] = [this._review1];
-  private _currId = 2;
+  private _review2: Review = {
+    id: 2,
+    revieweeId: 2,
+    reviewerId: 1,
+    dateRequested: new Date('01/01/2019'),
+    dateSubmitted: null,
+    reviewStatus: 1,
+    review: null
+  };
+  private _reviews: Review[] = [this._review1, this._review2];
+  private _currId = 3;
+
+  constructor(private readonly moduleRef: ModuleRef) {}
+
+  onModuleInit() {
+    this.employeeService = this.moduleRef.get(EmployeeService, { strict: false });
+  }
 
   async returnReviews(): Promise<Review[]> {
     const method = this.className + '.returnAllReviews';
@@ -39,6 +57,8 @@ export class ReviewService {
       reviews.push(review);
     } else if (sourceType === ReviewSource.revieweeId) {
       reviews = await this.findByRevieweeId(id);
+    } else if (sourceType === ReviewSource.reviewerId) {
+      reviews = await this.findByReviewerId(id);
     }
 
     console.log(method + ' returning the following reviews: ' + JSON.stringify(reviews));
@@ -65,8 +85,31 @@ export class ReviewService {
     const method = this.className + '.findByRevieweeId';
     console.log(method + ' searching for review using reviewee ID: ' + searchId);
 
-    const reviews = this._reviews.filter(({ revieweeId }) => {
+    const reviewee = await this.employeeService.findById(searchId);
+
+    const reviews = this._reviews.filter(async (review: Review) => {
+      const { revieweeId, reviewerId } = review;
+      if (revieweeId === searchId) {
+        const reviewer = await this.employeeService.findById(reviewerId);
+        review.revieweeFullName = reviewee.firstName + ' ' + reviewee.lastName;
+        review.reviewerFullName = reviewer.firstName + ' ' + reviewer.lastName;
+        console.log(review);
+      }
       return revieweeId === searchId;
+    });
+
+    console.log(method + ' returning following review: ' + JSON.stringify(reviews));
+    return reviews;
+  }
+
+  async findByReviewerId(searchId: number): Promise<Review[]> {
+    this.validateId(searchId);
+
+    const method = this.className + '.findByReviewerId';
+    console.log(method + ' searching for review using reviewee ID: ' + searchId);
+
+    const reviews = this._reviews.filter(({ reviewerId }) => {
+      return reviewerId === searchId;
     });
 
     console.log(method + ' returning following review: ' + JSON.stringify(reviews));

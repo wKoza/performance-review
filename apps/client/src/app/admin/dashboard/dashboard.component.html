@@ -1,4 +1,4 @@
-<h1>ENTER ADMIN NAME HERE</h1>
+<h1 *ngIf="currEmployee">{{currEmployee.firstName}} {{currEmployee.lastName}}</h1>
 
 <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
   <!-- First Name Column -->

@@ -1,10 +1,12 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException, OnModuleInit } from '@nestjs/common';
+import { ModuleRef } from '@nestjs/core';
 import { Employee, Review, ReviewStatuses, Roles } from '@perf-review/api-interfaces';
 import { ReviewService } from '../review/review.service';
 import { EmployeeDTO } from './employee.dto';
 
 @Injectable()
-export class EmployeeService {
+export class EmployeeService implements OnModuleInit {
+  private reviewService: ReviewService;
   private className = 'EmployeeService';
   private _admin1: Employee = {
     id: 1,
@@ -21,16 +23,20 @@ export class EmployeeService {
   private _employees: Employee[] = [this._admin1, this._employee1];
   private _currId = 3;
 
-  constructor(private reviewService: ReviewService) {}
+  constructor(private readonly moduleRef: ModuleRef) {}
 
-  async returnAllEmployees(): Promise<any> {
+  onModuleInit() {
+    this.reviewService = this.moduleRef.get(ReviewService, { strict: false });
+  }
+
+  async returnAllEmployees(): Promise<Employee[]> {
     const method = this.className + '.returnAllEmployees';
     console.log(method + ' returning all employees');
 
     return this._employees;
   }
 
-  async findById(searchId: number): Promise<any> {
+  async findById(searchId: number): Promise<Employee> {
     this.validateId(searchId);
 
     const method = this.className + '.findById';

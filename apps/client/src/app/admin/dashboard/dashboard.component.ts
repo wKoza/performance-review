@@ -2,9 +2,10 @@
 import { Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatTableDataSource } from '@angular/material/table';
+import { Router } from '@angular/router';
 import { Employee } from '@perf-review/api-interfaces';
 import { DialogTemplateComponent } from '../../shared/components/dialog/dialog-template.component';
-import { EmployeeService } from '../employee.service';
+import { EmployeeService } from '../../shared/services/employee.service';
 
 @Component({
   selector: 'perf-review-dashboard',
@@ -19,7 +20,11 @@ export class DashboardComponent implements OnInit {
   displayedColumns: string[] = ['first', 'last', 'role', 'view', 'delete'];
   dataSource = new MatTableDataSource<Employee>();
 
-  constructor(private employeeService: EmployeeService, public dialog: MatDialog) {}
+  constructor(
+    private employeeService: EmployeeService,
+    public dialog: MatDialog,
+    private router: Router
+  ) {}
 
   ngOnInit() {
     this.roleMap.set(1, 'Admin');
@@ -33,8 +38,8 @@ export class DashboardComponent implements OnInit {
     });
   }
 
-  loadEmployeeComponent(employeeId: number) {
-    console.log('loading employeeId: ' + employeeId);
+  loadEmployeeComponent(id: number) {
+    this.router.navigate(['employee', id, 'user', this.currEmployee.id]);
   }
 
   /**

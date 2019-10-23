@@ -1,6 +1,6 @@
-import { Injectable } from '@angular/core';
-import { Employee, Review, ReviewSource } from '@perf-review/api-interfaces';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { Injectable } from '@angular/core';
+import { Review, ReviewSource } from '@perf-review/api-interfaces';
 import { Observable } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 
@@ -24,6 +24,12 @@ export class ReviewService {
 
   getReviewsByReviewId(id: number): Observable<Review[]> {
     const url = this.BASE_URL + '/' + ReviewSource.reviewId + '/' + id;
+
+    return this.httpClient.get<Review[]>(url).pipe(catchError((err) => this.handleError(err)));
+  }
+
+  getReviewsByReviewerId(id: number): Observable<Review[]> {
+    const url = this.BASE_URL + '/' + ReviewSource.reviewerId + '/' + id;
 
     return this.httpClient.get<Review[]>(url).pipe(catchError((err) => this.handleError(err)));
   }

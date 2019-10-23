@@ -17,6 +17,8 @@ export interface Review {
   dateSubmitted: Date;
   reviewStatus: number;
   review: string;
+  revieweeFullName?: string;
+  reviewerFullName?: string;
 }
 
 export enum Roles {
@@ -31,6 +33,7 @@ export enum ReviewStatuses {
 
 export enum ReviewSource {
   reviewId = 'reviewId',
+  reviewerId = 'reviewerId',
   revieweeId = 'revieweeId'
 }
 
