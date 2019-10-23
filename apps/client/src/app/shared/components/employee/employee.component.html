@@ -1,54 +1,91 @@
-<p>{{employee | json}}</p>
-<p>employee reviews {{empReviews | json}}</p>
-<p>reviewer reviews {{reviewerReviews | json}}</p>
 <div *ngIf="employee && user">
   <h1>Employee: {{employee.firstName}} {{employee.lastName}}</h1>
   <mat-tab-group>
     <mat-tab *ngIf="empReviews && user.roleType === ROLE_ADMIN" label="Employee Reviews"> 
-      <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
-          <!-- First Name Column -->
-          <ng-container matColumnDef="first">
-            <th mat-header-cell *matHeaderCellDef>First Name</th>
-            <td mat-cell *matCellDef="let element">{{element.firstName}}</td>
-          </ng-container>
-        
-          <!-- Last Name Column -->
-          <ng-container matColumnDef="last">
-            <th mat-header-cell *matHeaderCellDef>Last Name</th>
-            <td mat-cell *matCellDef="let element">{{element.lastName}}</td>
-          </ng-container>
-        
-          <!-- Role Column -->
-          <ng-container matColumnDef="role">
-            <th mat-header-cell *matHeaderCellDef>Role</th>
-            <td mat-cell *matCellDef="let element">{{element.roleType | keyValue: roleMap}}</td>
-          </ng-container>
-        
-          <!-- View Employee -->
-          <ng-container matColumnDef="view">
-            <th mat-header-cell *matHeaderCellDef>View</th>
-            <td mat-cell *matCellDef="let element">
-              <button mat-raised-button color="primary" (click)="loadEmployeeComponent(element.id)">
-                View
-              </button>
-            </td>
-          </ng-container>
-        
-          <!-- Delete Employee -->
-          <ng-container matColumnDef="delete">
-            <th mat-header-cell *matHeaderCellDef>Delete</th>
-            <td mat-cell *matCellDef="let element">
-              <button mat-raised-button color="warn" (click)="deleteEmployee(element.id)">
-                Delete
-              </button>
-            </td>
-          </ng-container>
-        
-          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-          <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-        </table>
+      <table mat-table [dataSource]="empRevDataSource" class="mat-elevation-z8">
+        <ng-container matColumnDef="reviewee">
+            <th mat-header-cell *matHeaderCellDef>Reviewee Full Name</th>
+            <td mat-cell *matCellDef="let element">{{element.revieweeFullName}}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="reviewer">
+          <th mat-header-cell *matHeaderCellDef>Reviewer Full Name</th>
+          <td mat-cell *matCellDef="let element">{{element.reviewerFullName}}</td>
+        </ng-container>
+      
+        <ng-container matColumnDef="status">
+          <th mat-header-cell *matHeaderCellDef>Review Status</th>
+          <td mat-cell *matCellDef="let element">{{element.reviewStatus | keyValue: reviewMap}}</td>
+        </ng-container>
+      
+        <ng-container matColumnDef="update">
+          <th mat-header-cell *matHeaderCellDef>Update</th>
+          <td mat-cell *matCellDef="let element">
+            <button mat-raised-button color="primary" (click)="loadReviewUpdateDialog(element.id)">
+              Update
+            </button>
+          </td>
+        </ng-container>
+      
+        <ng-container matColumnDef="delete">
+          <th mat-header-cell *matHeaderCellDef>Delete</th>
+          <td mat-cell *matCellDef="let element">
+            <button mat-raised-button color="warn" (click)="deleteReview(element.id, empRevDataSource.data)">
+              Delete
+            </button>
+          </td>
+        </ng-container>
+      
+        <tr mat-header-row *matHeaderRowDef="empRevColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: empRevColumns;"></tr>
+      </table>
     </mat-tab>
-    <mat-tab *ngIf="reviewerReviews" label="Employee submitted and pending reviews"> Content 2 </mat-tab>
+    <mat-tab *ngIf="reviewerReviews" label="Employee submitted and pending reviews"> 
+      <table mat-table [dataSource]="reviewerDataSource" class="mat-elevation-z8">
+        <ng-container matColumnDef="reviewee">
+            <th mat-header-cell *matHeaderCellDef>Reviewee Full Name</th>
+            <td mat-cell *matCellDef="let element">{{element.revieweeFullName}}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="reviewer">
+          <th mat-header-cell *matHeaderCellDef>Reviewer Full Name</th>
+          <td mat-cell *matCellDef="let element">{{element.reviewerFullName}}</td>
+        </ng-container>
+      
+        <ng-container matColumnDef="status">
+          <th mat-header-cell *matHeaderCellDef>Review Status</th>
+          <td mat-cell *matCellDef="let element">{{element.reviewStatus | keyValue: reviewMap}}</td>
+        </ng-container>
+      
+        <ng-container matColumnDef="submit">
+          <th mat-header-cell *matHeaderCellDef>Submit</th>
+          <td mat-cell *matCellDef="let element">
+            <!--only user with the same ID as an employee can submit-->
+            <!-- also you can only submit if the status is pending-->
+            <button mat-raised-button color="primary" *ngIf="user.id === employee.id && element.reviewStatus === REVIEW_STATUS_PENDING" (click)="loadReviewSubmitDialog(element.id)">
+              Submit
+            </button>
+          </td>
+        </ng-container>
+      
+        <ng-container matColumnDef="delete">
+          <th mat-header-cell *matHeaderCellDef>Delete</th>
+          <td mat-cell *matCellDef="let element">
+            <button mat-raised-button color="warn" *ngIf="user.roleType === ROLE_ADMIN" (click)="deleteReview(element.id, reviewerDataSource.data)">
+              Delete
+            </button>
+          </td>
+        </ng-container>
+      
+        <tr mat-header-row *matHeaderRowDef="reviewerColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: reviewerColumns;"></tr>
+      </table>
+    </mat-tab>
   </mat-tab-group>
   
 </div>
+
+<p>following shows data</p>
+<p>{{employee | json}}</p>
+<p>employee reviews {{empReviews | json}}</p>
+<p>reviewer reviews {{reviewerReviews | json}}</p>

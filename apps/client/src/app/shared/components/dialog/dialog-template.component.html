@@ -1,10 +1,17 @@
-<h1 mat-dialog-title>{{data.title}}</h1>
+<h1 mat-dialog-title *ngIf="data.title">{{data.title}}</h1>
+<h3 mat-dialog-subtitle *ngIf="data.subtitle">{{data.subtitle}}</h3>
 <div mat-dialog-content *ngIf="data.content">
   <p>{{data.content}}</p>
+  <mat-form-field *ngIf="data.showInput">
+      <input matInput [(ngModel)]="data.input">
+  </mat-form-field>
 </div>
 <div mat-dialog-actions>
-  <button mat-raised-button [mat-dialog-close]="false" (click)="onNoClick()">{{data.noBtnTitle}}</button>
-  <button mat-raised-button color="warn" [mat-dialog-close]="true" (click)="onYesClick()">
+  <button mat-raised-button *ngIf="data.showInput" [mat-dialog-close]="data.input">
+      {{data.yesBtnTitle}}
+  </button>
+  <button mat-raised-button *ngIf="!data.showInput" [mat-dialog-close]="true" (click)="onYesClick()">
     {{data.yesBtnTitle}}
   </button>
+  <button mat-raised-button [mat-dialog-close]="false" (click)="onNoClick()">{{data.noBtnTitle}}</button>
 </div>

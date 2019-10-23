@@ -10,6 +10,7 @@ export class DialogTemplateComponent {
     public dialogRef: MatDialogRef<DialogTemplateComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any
   ) {
+    console.log(data);
     data.noBtnTitle = data.noBtnTitle ? data.noBtnTitle : 'No';
     data.yesBtnTitle = data.yesBtnTitle ? data.yesBtnTitle : 'Yes';
   }

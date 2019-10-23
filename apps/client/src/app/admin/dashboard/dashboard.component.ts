@@ -32,9 +32,9 @@ export class DashboardComponent implements OnInit {
 
     this.employeeService.getEmployeeById(this.TEST_EMP).subscribe((employee: Employee) => {
       this.currEmployee = employee;
-      const excludedEmployeeIds = new Set<number>();
-      excludedEmployeeIds.add(this.currEmployee.id);
-      this.getAllEmployees(excludedEmployeeIds);
+      // const excludedEmployeeIds = new Set<number>();
+      // excludedEmployeeIds.add(this.currEmployee.id);
+      this.getAllEmployees();
     });
   }
 
@@ -47,7 +47,6 @@ export class DashboardComponent implements OnInit {
    * @param employeeId
    */
   deleteEmployee(employeeId: number) {
-    console.log('deleting employeeId: ' + employeeId);
     const employee: Employee = this.dataSource.data.find((employee: Employee) => {
       return employee.id === employeeId;
     });
@@ -57,17 +56,16 @@ export class DashboardComponent implements OnInit {
       if (result) {
         // delete was pressed
         this.employeeService.deleteEmployee(employeeId).subscribe((result) => {
-          const excludedEmployeeIds = new Set<number>();
-          excludedEmployeeIds.add(this.currEmployee.id);
-          this.getAllEmployees(excludedEmployeeIds);
+          // const excludedEmployeeIds = new Set<number>();
+          // excludedEmployeeIds.add(this.currEmployee.id);
+          this.getAllEmployees();
         });
       }
     });
   }
   openDialog(employee: Employee) {
     const dialogRef = this.dialog.open(DialogTemplateComponent, {
-      width: '250px',
-      height: '250px',
+      width: '300px',
       data: {
         title: 'Deleting Employee',
         content: 'Would you like to delete ' + employee.firstName + ' ' + employee.lastName + '?',

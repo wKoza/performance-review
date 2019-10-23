@@ -145,7 +145,7 @@ export class EmployeeService implements OnModuleInit {
       throw new NotFoundException('Could not find employee with the following id: ' + id);
     }
 
-    this._employees.splice(idx);
+    this._employees.splice(idx, 1);
   }
 
   private validateId(id: number) {

@@ -61,7 +61,9 @@ export class ReviewService implements OnModuleInit {
       reviews = await this.findByReviewerId(id);
     }
 
-    console.log(method + ' returning the following reviews: ' + JSON.stringify(reviews));
+    console.log(
+      method + '(' + sourceType + ') returning the following reviews: ' + JSON.stringify(reviews)
+    );
     return reviews;
   }
 
@@ -87,18 +89,18 @@ export class ReviewService implements OnModuleInit {
 
     const reviewee = await this.employeeService.findById(searchId);
 
-    const reviews = this._reviews.filter(async (review: Review) => {
-      const { revieweeId, reviewerId } = review;
-      if (revieweeId === searchId) {
-        const reviewer = await this.employeeService.findById(reviewerId);
-        review.revieweeFullName = reviewee.firstName + ' ' + reviewee.lastName;
-        review.reviewerFullName = reviewer.firstName + ' ' + reviewer.lastName;
-        console.log(review);
-      }
+    const reviews = this._reviews.filter((review: Review) => {
+      const { revieweeId } = review;
       return revieweeId === searchId;
     });
+    reviews.forEach(async (review: Review) => {
+      const { reviewerId } = review;
+      const reviewer = await this.employeeService.findById(reviewerId);
+      review.revieweeFullName = reviewee.firstName + ' ' + reviewee.lastName;
+      review.reviewerFullName = reviewer.firstName + ' ' + reviewer.lastName;
+    });
 
-    console.log(method + ' returning following review: ' + JSON.stringify(reviews));
+    console.log(method + ' returning following reviews: ' + JSON.stringify(reviews));
     return reviews;
   }
 
@@ -108,8 +110,18 @@ export class ReviewService implements OnModuleInit {
     const method = this.className + '.findByReviewerId';
     console.log(method + ' searching for review using reviewee ID: ' + searchId);
 
-    const reviews = this._reviews.filter(({ reviewerId }) => {
+    const reviewer = await this.employeeService.findById(searchId);
+
+    const reviews = this._reviews.filter((review: Review) => {
+      const { reviewerId } = review;
       return reviewerId === searchId;
+    });
+    reviews.forEach(async (review: Review) => {
+      const { reviewerId, revieweeId } = review;
+      console.log(reviewerId + ' --- ' + searchId + ' ---- ' + (reviewerId === searchId));
+      const reviewee = await this.employeeService.findById(revieweeId);
+      review.revieweeFullName = reviewee.firstName + ' ' + reviewee.lastName;
+      review.reviewerFullName = reviewer.firstName + ' ' + reviewer.lastName;
     });
 
     console.log(method + ' returning following review: ' + JSON.stringify(reviews));
@@ -167,7 +179,8 @@ export class ReviewService implements OnModuleInit {
       throw new NotFoundException('Could not find review with the following id: ' + id);
     }
 
-    this._reviews.splice(idx);
+    this._reviews.splice(idx, 1);
+    console.log(method + ' reviews after being deleted: ' + JSON.stringify(this._reviews));
   }
 
   private validateId(id: number) {

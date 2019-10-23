@@ -32,8 +32,9 @@
   <!-- Delete Employee -->
   <ng-container matColumnDef="delete">
     <th mat-header-cell *matHeaderCellDef>Delete</th>
-    <td mat-cell *matCellDef="let element">
-      <button mat-raised-button color="warn" (click)="deleteEmployee(element.id)">
+    <!-- cannot delete yourself -->
+    <td mat-cell *matCellDef="let element" >
+      <button mat-raised-button color="warn" *ngIf="element.id !== currEmployee.id" (click)="deleteEmployee(element.id)">
         Delete
       </button>
     </td>
