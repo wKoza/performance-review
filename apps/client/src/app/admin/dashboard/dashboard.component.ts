@@ -1,9 +1,10 @@
 // import { SelectionModel } from '@angular/cdk/collections';
 import { Component, OnInit } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
 import { MatTableDataSource } from '@angular/material/table';
 import { Employee } from '@perf-review/api-interfaces';
+import { DialogTemplateComponent } from '../../shared/components/dialog/dialog-template.component';
 import { EmployeeService } from '../employee.service';
-import { DialogComponent } from '../../shared/components/dialog/dialog.component';
 
 @Component({
   selector: 'perf-review-dashboard',
@@ -15,11 +16,10 @@ export class DashboardComponent implements OnInit {
   roleMap: Map<number, string> = new Map<number, string>(); // contains all roles. ideally this would be pulled from database
 
   currEmployee: Employee;
-  ELEMENT_DATA: Employee[];
   displayedColumns: string[] = ['first', 'last', 'role', 'view', 'delete'];
-  dataSource = new MatTableDataSource();
+  dataSource = new MatTableDataSource<Employee>();
 
-  constructor(private employeeService: EmployeeService) {}
+  constructor(private employeeService: EmployeeService, public dialog: MatDialog) {}
 
   ngOnInit() {
     this.roleMap.set(1, 'Admin');
@@ -27,11 +27,9 @@ export class DashboardComponent implements OnInit {
 
     this.employeeService.getEmployeeById(this.TEST_EMP).subscribe((employee: Employee) => {
       this.currEmployee = employee;
-    });
-    this.employeeService.getAllEmployees().subscribe((employees: Employee[]) => {
-      this.dataSource.data = employees.filter((employee: Employee) => {
-        return employee.id !== this.currEmployee.id;
-      });
+      const excludedEmployeeIds = new Set<number>();
+      excludedEmployeeIds.add(this.currEmployee.id);
+      this.getAllEmployees(excludedEmployeeIds);
     });
   }
 
@@ -39,16 +37,32 @@ export class DashboardComponent implements OnInit {
     console.log('loading employeeId: ' + employeeId);
   }
 
+  /**
+   * Deletes employee and fetches updated list
+   * @param employeeId
+   */
   deleteEmployee(employeeId: number) {
     console.log('deleting employeeId: ' + employeeId);
-    const employee = this.dataSource.data.find((employee: Employee) => {
+    const employee: Employee = this.dataSource.data.find((employee: Employee) => {
       return employee.id === employeeId;
     });
-    this.openDialog(employee);
+    const dialogRef = this.openDialog(employee);
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result) {
+        // delete was pressed
+        this.employeeService.deleteEmployee(employeeId).subscribe((result) => {
+          const excludedEmployeeIds = new Set<number>();
+          excludedEmployeeIds.add(this.currEmployee.id);
+          this.getAllEmployees(excludedEmployeeIds);
+        });
+      }
+    });
   }
-  openDialog(employee: Employee): void {
-    const dialogRef = this.dialog.open(DialogComponent, {
+  openDialog(employee: Employee) {
+    const dialogRef = this.dialog.open(DialogTemplateComponent, {
       width: '250px',
+      height: '250px',
       data: {
         title: 'Deleting Employee',
         content: 'Would you like to delete ' + employee.firstName + ' ' + employee.lastName + '?',
@@ -56,12 +70,20 @@ export class DashboardComponent implements OnInit {
         yesBtnTitle: 'Delete'
       }
     });
+    return dialogRef;
+  }
 
-    dialogRef.afterClosed().subscribe((result) => {
-      if (result) {
-        console.log('delete was pressed');
+  /**
+   * obtains all employees and excludes current employe
+   */
+  private getAllEmployees(excludedEmployeeIds?: Set<number>) {
+    this.employeeService.getAllEmployees().subscribe((employees: Employee[]) => {
+      if (excludedEmployeeIds) {
+        this.dataSource.data = employees.filter((employee: Employee) => {
+          return !excludedEmployeeIds.has(employee.id);
+        });
       } else {
-        console.log('cancel was pressed');
+        this.dataSource.data = employees;
       }
     });
   }
