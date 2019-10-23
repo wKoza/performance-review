@@ -118,7 +118,6 @@ export class ReviewService implements OnModuleInit {
     });
     reviews.forEach(async (review: Review) => {
       const { reviewerId, revieweeId } = review;
-      console.log(reviewerId + ' --- ' + searchId + ' ---- ' + (reviewerId === searchId));
       const reviewee = await this.employeeService.findById(revieweeId);
       review.revieweeFullName = reviewee.firstName + ' ' + reviewee.lastName;
       review.reviewerFullName = reviewer.firstName + ' ' + reviewer.lastName;

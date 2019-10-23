@@ -1,84 +1,57 @@
-# PerfReview
+# FullStackEngineerChallenge
 
-This project was generated using [Nx](https://nx.dev).
+### Running application
+- clone project
+- install all dependencies 
+- run following command 'npm run start' or view the project live in the following link
 
-<p align="center"><img src="https://raw.githubusercontent.com/nrwl/nx/master/nx-logo.png" width="450"></p>
+### Overview
 
-🔎 **Nx is a set of Extensible Dev Tools for Monorepos.**
+Created two separate endpoints (dictated by the NestJS controllers) that handle Employees and Reviews.  These allow the basic functionality of  GET, UPDATE, PUT, and DELETE.  I also included a couple of other endpoints that allow the user to assign a list of employee ids as reviewers to another employee id (reviewee).
 
-## Quick Start & Documentation
+On the client side, I created a quick landing page that allows the user to select whether they want the "Admin View" or the "Employee View". This selection then dictates what the user will be able to see.  The "Admin View" includes a list of all employees and the ability to delete an employee, view an employee, or create a new employee.   When viewing an employee, the user can see all of the employees reviews and update any necessary review.  The user can also choose to Add a review from this page.  The "Admin View" also has a page where they can assign a list of employees as reviewers to a selected reviewee.
 
-[Nx Documentation](https://nx.dev/angular)
+The "Employee View" is allowed to see a list of  reviews. These statuses of the reviews are updated after a review is submitted.
 
-[10-minute video showing all Nx features](https://nx.dev/angular/getting-started/what-is-nx)
+The tech stack is Angular 8, Angular Material and CSS on the frontend, [NestJS](https://nestjs.com/) (framework built on top of ExpressJS and TypeScript) on the backend, Jest for testing, and Prettier + tslint to style my code.  I also used [Nx](https://nx.dev/angular) to create my project.  Nx allows me to reuse components, interfaces or applications throughout my application.  I used this to help create my NestJS and Angular components faster and to reuse code, such as my interfaces. 
 
-[Interactive Tutorial](https://nx.dev/angular/tutorial/01-create-application)
+I've also included a link below for a schema that I created.  Unfortunately, I wasn't able to add database support but the following shows my initial approach to creating a schema.
 
-## Adding capabilities to your workspace
+[Free Database Designer | DbDesigner.net](https://dbdesigner.page.link/NZSn)
 
-Nx supports many plugins which add capabilities for developing different types of applications and different tools.
+### Assumptions Made
 
-These capabilities include generating applications, libraries, etc as well as the devtools to test, and build projects as well.
+- Admin can update a review that has already been submitted
+- Reviews can be in a "Pending" state or "Submitted" state
+- Employees can view feedback they are required to submit
+- Employees can only view feedback that they have not submitted (that are in "Pending" state)
+- Admin can assign herself/himself to also be a reviewer of an employee
+- An employee cannot be a Reviewee and a Reviewer in the same revierw.
+For example employee1 cannot review employee1
+- Admin can assign others to review herself/himself
+- A review can be NULL in the table, if status is "Pending"
+- A review requires a date requested and a date submitted
+- No object is returned when deleting a Review or an Employee. Just a status of 200
+- List of employees in the admin page contain everyone except for the current admin
 
-Below are some plugins which you can add to your workspace:
+### Possible Updates
 
-- [Angular](https://angular.io)
-  - `ng add @nrwl/angular`
-- [React](https://reactjs.org)
-  - `ng add @nrwl/react`
-- Web (no framework frontends)
-  - `ng add @nrwl/web`
-- [Nest](https://nestjs.com)
-  - `ng add @nrwl/nest`
-- [Express](https://expressjs.com)
-  - `ng add @nrwl/express`
-- [Node](https://nodejs.org)
-  - `ng add @nrwl/node`
+The following are areas of improvement that I was not able to implement due to time constraints
 
-## Generate an application
-
-Run `ng g @nrwl/angular:app my-app` to generate an application.
-
-> You can use any of the plugins above to generate applications as well.
-
-When using Nx, you can create multiple applications and libraries in the same workspace.
-
-## Generate a library
-
-Run `ng g @nrwl/angular:lib my-lib` to generate a library.
-
-> You can also use any of the plugins above to generate libraries as well.
-
-Libraries are sharable across libraries and applications. They can be imported from `@perf-review/mylib`.
-
-## Development server
-
-Run `ng serve my-app` for a dev server. Navigate to http://localhost:4200/. The app will automatically reload if you change any of the source files.
-
-## Code scaffolding
-
-Run `ng g component my-component --project=my-app` to generate a new component.
-
-## Build
-
-Run `ng build my-app` to build the project. The build artifacts will be stored in the `dist/` directory. Use the `--prod` flag for a production build.
-
-## Running unit tests
-
-Run `ng test my-app` to execute the unit tests via [Jest](https://jestjs.io).
-
-Run `nx affected:test` to execute the unit tests affected by a change.
-
-## Running end-to-end tests
-
-Run `ng e2e my-app` to execute the end-to-end tests via [Cypress](https://www.cypress.io).
-
-Run `nx affected:e2e` to execute the end-to-end tests affected by a change.
-
-## Understand your workspace
-
-Run `nx dep-graph` to see a diagram of the dependencies of your projects.
-
-## Further help
-
-Visit the [Nx Documentation](https://nx.dev/angular) to learn more.
+- **Adding history to the reviews**
+Since an admin can update the reviews, we could benfit from having a history of the reviews, or at least a column to specify who it was updated by last and another column for when it was last updated
+- **Common error page** 
+A common error page (component) could have been created. This component could have then been used any time we run into any errors.
+- Implementing a database.  Unfortunately, I was not able to include a database but I did include an [example](https://dbdesigner.page.link/NZSn) of what my schema would look like.
+    - This could have been implemented a number of ways, such as an Amazon RDS for PostegreSQL setup
+    - If I had added a PostegreSQL database (or a MySQL database) I could have used TypeORM to create entities for most of my interfaces created in api-interface.ts file
+    - I then could've have created the connection within my app module in my NestJS backend
+- **Adding security to specific endpoints** 
+Certain endpoints should have extra validation to validate that user is an Admin
+- **Adding authorization guards in Angular**
+Certain components should have extra a guard service that validate that user is an Admin
+- **Versioning API**
+I should have added a version number to the API that way the user can have a way to access newer versions of the API without potentially breaking them.
+- **Updates to assign endpoint**
+I should ideally have different types of endpoints for assign (similar to how I set up the source type for Reviews). This could've allowed the users to specify what they wanted to assign, in case we wanted to expand what the Admin can assign.
+- **Creating multiple modules for components**
